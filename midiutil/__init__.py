@@ -1,0 +1,1 @@
+from .MidiFile3 import MIDIFile
