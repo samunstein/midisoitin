@@ -1,6 +1,6 @@
 from ctypes import windll, c_void_p, c_int, byref
 
-from Randomjuttuja.midisoitin.mplaymaster.smf import read
+from mplaymaster.smf import read
 
 
 class midiDevice:

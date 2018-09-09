@@ -1,11 +1,14 @@
 from collections import defaultdict
+from soitin.output_rajapinnat.OutputRajapinta import OutputRajapinta
 
-KEYS = ["1", "2", "3", "4", "5", "x", "q", "e", "r", "0"]
 
-class MidiInterface():
-    def __init__(self):
+class GW2(OutputRajapinta):
+    KEYS = ["1", "2", "3", "4", "5", "x", "q", "e", "r", "0"]
+
+    def __init__(self, maxraidat, filename):
         self.nuotit = defaultdict(lambda: [])
         self.inputit = []
+        self.filename = filename
 
     def __sendInput(self, inputst):
         self.inputit.append("SendInput " + inputst)
@@ -13,16 +16,16 @@ class MidiInterface():
     def __sleep(self, kauan):
         self.inputit.append("Sleep, " + str(int(kauan)))
 
-    def addNote(self, track, channel, pitch, time, duration, volume):
+    def nuotti(self, track, channel, pitch, time, duration, volume):
         self.nuotit[time].append(("n", pitch))
 
-    def addTempo(self, track, time, tempo):
+    def tempo(self, track, time, tempo):
         self.nuotit[time].append(("t", tempo))
 
-    def addProgramChange(self, *args):
+    def soitin(self, track, channel, time, program):
         pass
 
-    def writeFile(self):
+    def kirjoita(self, file=None):
         self.inputit = []
         tempo = 60
         prevtime = 0
@@ -67,11 +70,13 @@ class MidiInterface():
 
                     oktvaihd = okt - prevokt
                     if oktvaihd > 0:
-                        self.__sendInput(oktvaihd * KEYS[-1])
+                        self.__sendInput(oktvaihd * GW2.KEYS[-1])
                     elif oktvaihd < 0:
-                        self.__sendInput(-oktvaihd * KEYS[-2])
+                        self.__sendInput(-oktvaihd * GW2.KEYS[-2])
                     prevokt = okt
 
-                    self.__sendInput(KEYS[nuotnum])
+                    self.__sendInput(GW2.KEYS[nuotnum])
 
-        print("\n".join(self.inputit))
+        file = open(self.filename, "w")
+        file.write("\n".join(self.inputit))
+        file.close()
